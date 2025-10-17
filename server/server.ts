@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import timedhabitsdb from './models/db';
+import cors from 'cors';
 
-const cors = require('cors');
 const corsOptions = {
     origin: ['http://localhost:3000'],
 };
