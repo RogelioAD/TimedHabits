@@ -12,7 +12,17 @@
 
 ## 🛠️ Tech Stack
 
-Frontend: React, Vite, Tailwind CSS
-Backend: Node.js, Express.js
-Database: MySQL with Sequelize ORM
-Authentication: Google OAuth (via Passport.js)
+**Frontend** 
+- React
+- Vite
+- Tailwind CSS
+  
+**Backend**
+- Node.js
+- Express.js
+
+**Database**
+- MySQL with Sequelize ORM
+
+**Authentication**
+- Google OAuth (via Passport.js)
