@@ -45,7 +45,7 @@ export function HabitFactory(sequelize: Sequelize) {
         },
         description: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
         goalTimeMinutes: {
             type: DataTypes.INTEGER,
