@@ -1,21 +1,22 @@
 import { Router } from "express";
-import { getAllHHabits, createHabit, editHabit, deleteHabit, getHabitsProgress}
+import { getAllHHabits, createHabit, editHabit, deleteHabit, getHabitsProgress} from "../controllers/habitsController";
+import { requireAuth } from "../middleware/authMiddleware";
 
 const router = Router();
 
 //get all users habits
-router.get('/', getAllHHabits);
+router.get('/', requireAuth, getAllHHabits);
 
 //create a new habit
-router.post('/', createHabit);
+router.post('/', requireAuth, createHabit);
 
 //update a habit
-router.put('/:id', editHabit);
+router.put('/:id', requireAuth, editHabit);
 
 //delate a habit
-router.delete('/:id', deleteHabit);
+router.delete('/:id', requireAuth, deleteHabit);
 
 //get progress stat for habit
-router.get('/:id/progress', getHabitsProgress);
+router.get('/:id/progress', requireAuth, getHabitsProgress);
 
 export default router;

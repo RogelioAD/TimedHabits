@@ -4,7 +4,8 @@ import passport from './middleware/passport';
 import timedhabitsdb from './models/db';
 import cors from 'cors';
 import { config } from './config/config';
-import authRoutes from './routes/auth';
+import authRoutes from './routes/authRoutes';
+import habitsRoutes from './routes/habitsRoutes';
 
 const corsOptions = {
     origin: ['http://localhost:3000'],
@@ -37,6 +38,7 @@ app.use(passport.session());
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/api/habits', habitsRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {

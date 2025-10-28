@@ -1,42 +1,46 @@
 import { RequestHandler } from "express";
 import { Habit } from "../models/habit";
 import { User } from "../models/user";
+import { verifyUser } from "../middleware/authMiddleware";
 
 export const getAllHHabits: RequestHandler = async (req, res, next) => {
     console.log('this getAllHabits api is being called')
     try {
-        let habits = await Habit.findAll();
+        const user = await verifyUser(req);
+        if (!user) {
+            return res.status(401).json({ message: 'User is not authenticated' });
+        }
+        
+        //where:{ userId: user.id } this is looking into User model because user is sourced from verifyUUser which returns user from User model
+        let habits = await Habit.findAll({ where: { userId: user.id } });
         res.status(200).json(habits)
     } catch (err) {
         return res.status(404).json({ message: 'There are no habits!' });
     }
-
 }
 
 export const createHabit: RequestHandler = async (req, res, next) => {
-    console.log('this createChat api is being called');
+    console.log('this createHabit api is being called');
     let user: User | null = await verifyUser(req);
 
     if (!user) {
         return res.status(401).send('User is not authenticated');
     }
 
-    const { id, userId, name, description, goalTimeMinutes, color, isActive, createdAt, updatedAt } = req.body;
+    const { name, description, goalTimeMinutes, color, isActive } = req.body;
 
-    if (!id || !userId || !name || !description || !goalTimeMinutes || !color || !isActive || !createdAt || !updatedAt) {
+    if (!name || !description || !goalTimeMinutes || !color || isActive === undefined) {
         return res.status(400).json({ message: 'All information is needed when creating habits' });
     }
 
     try {
         const newHabit = await Habit.create({
-            userId,
+            userId: user.id, // Use the authenticated user's ID from verifyUser
             name,
             description,
             goalTimeMinutes,
             color,
-            isActive,
-            createdAt,
-            updatedAt
+            isActive
         });
 
         res.status(201).json(newHabit);
@@ -45,28 +49,28 @@ export const createHabit: RequestHandler = async (req, res, next) => {
         res.status(500).send(err);
     }
 };
-//start refactoring from this comment last coding sesh 10/23
+
 export const editHabit: RequestHandler = async (req, res, next) => {
-    console.log('this editChat api is being called');
+    console.log('this editHabit api is being called');
 
     try {
         const user: User | null = await verifyUser(req);
-        const { chatId } = req.params;
+        const { id } = req.params;
 
         if (!user) {
             return res.status(401).send('User is not authenticated');
         }
 
-        const chatFound = await Chat.findByPk(chatId);
+        const habitFound = await Habit.findByPk(id);
 
-        if (!chatFound) {
-            return res.status(404).send('Chat not found');
+        if (!habitFound) {
+            return res.status(404).send('Habit not found');
         }
 
         const updatedFields = req.body;
 
-        await chatFound.update(updatedFields);
-        res.status(200).json(chatFound);
+        await habitFound.update(updatedFields);
+        res.status(200).json(habitFound);
 
     } catch (err) {
         console.error('Error editing chat:', err);
@@ -75,21 +79,21 @@ export const editHabit: RequestHandler = async (req, res, next) => {
 };
 
 export const deleteHabit: RequestHandler = async (req, res, next) => {
-    console.log('this deleteChat api is being called');
+    console.log('this deleteHabit api is being called');
 
     try {
         const user: User | null = await verifyUser(req);
-        let { chatId } = req.params;
+        let { id } = req.params;
 
         if (!user) {
             return res.status(401).send('User is not authenticated');
         }
 
-        let chatFound = await Chat.findByPk(chatId);
+        let habitFound = await Habit.findByPk(id);
 
-        if (chatFound) {
-            await Chat.destroy({
-                where: { chatId: chatId }
+        if (habitFound) {
+            await Habit.destroy({
+                where: { id: id }
             });
             res.status(200).json();
         }
@@ -98,14 +102,15 @@ export const deleteHabit: RequestHandler = async (req, res, next) => {
         }
 
     } catch (err) {
-        console.error('Error deleting chat:', err);
+        console.error('Error deleting habit:', err);
         res.status(500).send(err);
     }
 }
 
+//TODO: Refactor this api call to do its intended purposes
 export const getHabitsProgress: RequestHandler = async (req, res, next) => {
-    console.log('this getOneChat api is being called')
-    let { chatId } = req.params;
-    let chat = await Chat.findByPk(chatId);
-    res.status(200).json(chat);
+    console.log('this getHabitsProgress api is being called')
+    let { id } = req.params;
+    let habit = await Habit.findByPk(id);
+    res.status(200).json(habit);
 }
